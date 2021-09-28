@@ -47,6 +47,8 @@ main{
     width: 100%;
     height: 100%;
     object-fit: cover;
+    transition: all .5s ease-in-out;
+    filter: grayscale(100%);
 }
 
 .galeria-itens:hover{
@@ -54,7 +56,8 @@ main{
 }
 
 .galeria-itens:hover img{
-    transform: scale(1.3) rotate(5deg);
+    transform: scale(1.3) rotate(2deg);
+    filter: grayscale(0%);
 }
 
 footer{
