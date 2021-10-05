@@ -1,17 +1,36 @@
 "use strict"
-//array: quem vai trazer essas informações é o back-end
-const imagens = [
-    "./img/coliseu.jpg",
-    "./img/cristo.jpg",
-    "./img/estatua-liberdade.jpg",
-    "./img/golden-gate-bridge.jpg",
-    "./img/macchu-picchu.jpg",
-    "./img/muralha-china.jpg",
-    "./img/taj-mahal.jpg",
-    "./img/torre-eifel.jpg"
-]
 
-const limparId = (urlImagem) => urlImagem.split("/")[2].split(".")[0]
+const limpar = (elemento) => {
+    while(elemento.firstChild){
+        elemento.removeChild(elemento.lastChild)
+    }
+}
+
+const pegarImagens = (raca) => fetch(`https://dog.ceo/api/breed/${raca}/images`)
+
+const procurarImagens = async (evento) => {
+
+    if(evento.key === 'Enter'){
+
+        const raca = evento.target.value
+        const imagensResponse = await pegarImagens(raca)
+        const imagens = await imagensResponse.json()
+        
+        limpar(document.querySelector(".galeria-container"))
+        limpar(document.querySelector(".slide-container"))
+
+        carregarImagens(imagens.message)
+        carregarSlides(imagens.message)
+
+    }
+ 
+}
+
+const limparId = (urlImagem) => {
+    const posBarra = urlImagem.lastIndexOf('/') + 1
+    const posPonto = urlImagem.lastIndexOf('.')
+    return urlImagem.substring(posBarra, posPonto)
+}
 
 // se tiver espaço, usar o: .replace(" ", "-")
 //se tiver que colocar em letra maiúscula usar: .toLowerCase()
@@ -33,7 +52,7 @@ const criarItem = (urlImagem) => {
     novoLink.innerHTML = `<img src="${urlImagem}" alt="">`
     container.appendChild(novoLink)
 }
-const carregarImagens = () => imagens.forEach(criarItem)
+const carregarImagens = (imagens) => imagens.forEach(criarItem)
 
 
 
@@ -44,7 +63,11 @@ const criarSlide = (urlImagem, indice, arr) => {
     slide.id = limparId(urlImagem)
 
     // 1° maneira
-    const indice = indice > 0 ? indice - 1 : arr.length -1
+    const indiceAnterior = indice > 0 ? indice - 1 : arr.length -1
+    const idAnterior = limparId(arr[indiceAnterior])
+
+    const indiceProximo = indice < arr.length - 1? indice +1 :0
+    const idProximo = limparId(arr[indiceProximo])
 
     // 2º maneira
 
@@ -56,10 +79,7 @@ const criarSlide = (urlImagem, indice, arr) => {
     // }
     // const idAnterior = limparId(arr[indiceAnterior])
 
-    const indiceProximo = indice < arr.length - 1? indice +1 :0
-    const idProximo = limparId(arr[indiceProximo])
 
-    
 
     slide.innerHTML = `
         <div class="image-container">
@@ -70,7 +90,8 @@ const criarSlide = (urlImagem, indice, arr) => {
         </div>
     `
 }
-const carregarSlides = () => imagens.forEach(criarSlide)
+const carregarSlides = (imagens) => imagens.forEach(criarSlide)
 
-carregarImagens()
-carregarSlides()
+
+document.querySelector(".pesquisa-container input")
+        .addEventListener('keypress', procurarImagens)
